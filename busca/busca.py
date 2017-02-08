@@ -49,7 +49,7 @@ class BuscaEmLargura(Busca):
 
                     borda.append(filho)
                     
-        raise Exception("Caminho não encontrado")
+        raise BuscaError("Caminho não encontrado")
 
 class BuscaDeCustoUniforme(Busca):
     """
@@ -91,7 +91,15 @@ class BuscaDeCustoUniforme(Busca):
                 #    substituir aquele nó borda por filho
                 #    
     
-        raise Exception("Caminho não encontrado")
+        raise BuscaError("Caminho não encontrado")
+
+class LimiteError(Exception):
+    pass
+
+class BuscaError(Exception):
+    pass
+
+from sys import getrecursionlimit
 
 class BuscaEmProfundidade(Busca):
     """
@@ -99,20 +107,48 @@ class BuscaEmProfundidade(Busca):
         retornar BPL-RECURSIVA(CRIAR-NÓ(problema, ESTADO-INICIAL), problema, limite)
     
     função BPL-RECURSIVA(nó, problema, limite) retorna uma solução ou falha/corte
-        se problema. TESTAR-OBJETIVO (nó.ESTADO) então, retorna SOLUÇÃO (nó)
-        se não se limite = 0 então retorna cortesenão
-            corte_ocorreu? ← falso para cada ação no problema.AÇÕES(nó.ESTADO) faça
-                filho ← NÓ-FILHO (problema, nó, ação)
-                resultado ← BPL-RECURSIVA (criança, problema limite − 1)
+        se problema.TESTAR-OBJETIVO(nó.ESTADO) então, retorna SOLUÇÃO (nó)
+        se não se limite = 0 então retorna corte
+        senão
+            corte_ocorreu? ← falso
+            para cada ação no problema.AÇÕES(nó.ESTADO) faça
+                filho ← NÓ-FILHO(problema, nó, ação)
+                resultado ← BPL-RECURSIVA(filho, problema, limite − 1)
                 se resultado = corte então corte_ocorreu? ← verdadeiro
                 senão se resultado ≠ falha então retorna resultado
             se corte_ocorreu? então retorna corte senão retorna falha
     """
     def __init__(self):
-        self.limite = 1000000
+        self.limite = getrecursionlimit() * 4 / 5
+
+    def buscar(self, problema):
+        no = self.gerarNoInicial(problema.estado_inicial)
+        return self.busca_recursiva(no, problema, self.limite)
+
+    def busca_recursiva(self, no, problema, limite):
+        if problema.testar_objetivo(no.estado):
+            return Solucao.gerar(no)
+
+        if limite == 0:
+            raise LimiteError("Limite atingido. Corte realizado")
+            
+        for acao in problema.acoes(no.estado):
+            filho = self.gerarNo(no, acao)
+            
+            resultado = None
+            try:
+                resultado = self.busca_recursiva(filho, problema, limite - 1)
+                return resultado
+            except LimiteError:
+                corte_ocorreu = True
+
+        if corte_ocorreu:
+            raise LimiteError("Limite atingido. Corte realizado")
+        else:
+            raise BuscaError("Caminho não encontrado")
 
 class BuscaEmProfundidadeLimitada(BuscaEmProfundidade):
-    
+
     def __init__(self, limite):
         self.limite = limite
 
@@ -123,7 +159,14 @@ class BuscaDeAprofundamentoIterativo(Busca):
         resultado ← BUSCA-EM-PROFUNDIDADE-LIMITADA(problema, profundidade)
         se resultado ≠ corte então retornar resultado
     """
-    pass
+    def buscar(self, problema):
+        limite = 0
+        while True:
+            try:
+                return BuscaEmProfundidadeLimitada(limite).buscar(problema)
+            except:
+                limite += 1
+        
 
 class BuscaBidirecional(Busca):
     """Não vou implementar"""

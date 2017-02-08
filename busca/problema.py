@@ -106,10 +106,23 @@ class Solucao(object):
             caminho.append((acao.origem, acao.custo, acao.destino))
             no = no.pai
 
-        return Solucao(caminho[::-1])
+        return Solucao(caminho[::-1], no_destino)
 
-    def __init__(self, caminho):
+    def __init__(self, caminho, no_destino):
         self.caminho = caminho
-        
+        self.no_destino = no_destino
+
     def __repr__(self):
         return self.caminho.__repr__()
+    
+    def beautify(self):
+        print(' - Caminho')
+        caminho = self.caminho[0][0]
+        
+        no = self.caminho
+        for passo in self.caminho:
+            caminho += ' -> ' + passo[2]
+        
+        print(caminho)
+
+        print(' - Custo do caminho:', self.no_destino.custo)
