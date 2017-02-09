@@ -86,6 +86,9 @@ class No(object):
         custo_pai = self.pai.custo if self.pai is not None else 0
         return custo_pai + acao.custo
 
+    def __lt__(self, other):
+        return self.custo < other.custo
+
 class Estado(object):
     """
     Um estado corresponde a uma configuração do mundo
@@ -117,11 +120,11 @@ class Solucao(object):
     
     def beautify(self):
         print(' - Caminho')
-        caminho = self.caminho[0][0]
+        caminho = str(self.caminho[0][0])
         
         no = self.caminho
         for passo in self.caminho:
-            caminho += ' -> ' + passo[2]
+            caminho += ' -> ' + str(passo[2])
         
         print(caminho)
 

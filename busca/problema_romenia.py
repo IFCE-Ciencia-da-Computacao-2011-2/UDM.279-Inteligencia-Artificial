@@ -30,10 +30,19 @@ class ProblemaRomenia(Problema):
     def gerarAcoes(self, estado):
         return [Acao(estado, k, v) for k, v in ProblemaRomenia.mapa[estado].items()]
     
-from busca import BuscaEmLargura, BuscaEmProfundidade, BuscaEmProfundidadeLimitada, BuscaDeAprofundamentoIterativo
+from busca import BuscaEmLargura, BuscaDeCustoUniforme, BuscaEmProfundidade, BuscaEmProfundidadeLimitada, BuscaDeAprofundamentoIterativo
 
 problema = ProblemaRomenia('Arad', 'Neamt')
-BuscaEmLargura().buscar(problema).beautify()
-BuscaEmProfundidade().buscar(problema).beautify()
-BuscaEmProfundidadeLimitada(10).buscar(problema).beautify()
-BuscaDeAprofundamentoIterativo().buscar(problema).beautify()
+
+metodos = [
+    BuscaEmLargura(),
+    #BuscaDeCustoUniforme(),
+    BuscaEmProfundidade(),
+    BuscaEmProfundidadeLimitada(10),
+    BuscaDeAprofundamentoIterativo()
+]
+
+for metodo in metodos:
+    print(metodo)
+    metodo.buscar(problema).beautify()
+    print()

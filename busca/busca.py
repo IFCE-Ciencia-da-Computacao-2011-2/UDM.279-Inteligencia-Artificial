@@ -1,3 +1,5 @@
+from heapq import heappush, heappop
+
 from problema import No
 from problema import Solucao
 
@@ -72,27 +74,42 @@ class BuscaDeCustoUniforme(Busca):
 
     def buscar(self, problema):
         no = self.gerarNoInicial(problema.estado_inicial)
-        borda = [no] # https://docs.python.org/3.6/library/heapq.html
+        borda = [] # https://docs.python.org/3.6/library/heapq.html
         explorado = []
         
-        while borda:
-            no = borda.pop(0)
+        heappush(borda, (no.custo, no))
+        counter = 5
+        while counter > 0:#borda:
+            counter -= 1
+            no = heappop(borda)[1]
+            print(borda)
+
             if problema.testar_objetivo(no.estado):
                 return Solucao.gerar(no)
+
             explorado.append(no.estado)
             
             for acao in problema.acoes(no.estado):
                 filho = self.gerarNo(no, acao)
                 
                 if filho.estado not in explorado or filho not in borda:
-                    borda.append(filho)
-                # senão se (filho.ESTADO) está na borda com o maior CUSTO-DE-CAMINHO então
-                #else if filho.estado not in explorado or filho not in borda:
+                    heappush(borda, (filho.custo, filho))
+                    continue
+
+                index = posicao_na_borda_com_custo_maior(borda, filho)
+                #if index >= 0:
+                #    borda
                 #    substituir aquele nó borda por filho
-                #    
     
         raise BuscaError("Caminho não encontrado")
 
+    def posicao_na_borda_com_custo_maior(self, borda, elemento):
+        for index, elemento in enumerate(borda):
+            if elemento[1] == elemento and elemento[0] > elemento.custo:
+                return index
+        
+        return -1
+            
 class LimiteError(Exception):
     pass
 
