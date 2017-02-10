@@ -16,6 +16,8 @@ class Busca(object):
         
 class BuscaEmLargura(Busca):
     """
+    Busca em grafo (guarda os visitados)
+    
     função BUSCA-EM-LARGURA(problema) retorna uma solução ou falha
         nó ← um nó com ESTADO = problema.ESTADO-INICIAL, CUSTO-DE-CAMINHO = 0
         se problema.TESTE-DE-OBJETIVO(nó.ESTADO) senão retorne SOLUÇÃO(nó),
@@ -39,13 +41,13 @@ class BuscaEmLargura(Busca):
         explorado = []
         
         while borda:
-            no = borda.pop(0)
+            no = self.pop(borda)
             explorado.append(no.estado)
             
             for acao in problema.acoes(no.estado):
                 filho = self.gerarNo(no, acao)
 
-                if filho.estado not in explorado or filho not in borda:
+                if filho.estado not in explorado and filho not in borda:
                     if problema.testar_objetivo(filho.estado):
                         return Solucao.gerar(filho)
 
@@ -53,8 +55,13 @@ class BuscaEmLargura(Busca):
                     
         raise BuscaError("Caminho não encontrado")
 
+    def pop(self, borda):
+        return borda.pop(0)
+
 class BuscaDeCustoUniforme(Busca):
     """
+    Busca em grafo (guarda os visitados)
+    
     função BUSCA-DE-CUSTO-UNIFORME(problema) retorna uma solução ou falha
         nó ← um nó com ESTADO = problema.ESTADO-INICIAL, CUSTO-DE-CAMINHO = 0
         borda ← fila de prioridade ordenada pelo CUSTO-DE-CAMINHO, com nó como elemento único
@@ -118,8 +125,10 @@ class BuscaError(Exception):
 
 from sys import getrecursionlimit
 
-class BuscaEmProfundidade(Busca):
+class BuscaEmProfundidadeArvore(Busca):
     """
+    Busca em árvore (não guarda os visitados)
+    
     função BUSCA-EM-PROFUNDIDADE-LIMITADA(problema, limite) retorna uma solução ou falha/corte
         retornar BPL-RECURSIVA(CRIAR-NÓ(problema, ESTADO-INICIAL), problema, limite)
     
@@ -136,7 +145,8 @@ class BuscaEmProfundidade(Busca):
             se corte_ocorreu? então retorna corte senão retorna falha
     """
     def __init__(self):
-        self.limite = getrecursionlimit() * 4 / 5
+        #self.limite = getrecursionlimit() * 4 / 5
+        self.limite = 1000
 
     def buscar(self, problema):
         no = self.gerarNoInicial(problema.estado_inicial)
@@ -164,13 +174,26 @@ class BuscaEmProfundidade(Busca):
         else:
             raise BuscaError("Caminho não encontrado")
 
-class BuscaEmProfundidadeLimitada(BuscaEmProfundidade):
+
+class BuscaEmProfunidadeGrafo(BuscaEmLargura):
+    """
+    Busca em grafo (guarda os visitados)
+    """
+    def pop(self, borda):
+        return borda.pop()
+
+class BuscaEmProfundidadeLimitada(BuscaEmProfundidadeArvore):
+    """
+    Busca em árvore (não guarda os visitados)
+    """
 
     def __init__(self, limite):
         self.limite = limite
 
 class BuscaDeAprofundamentoIterativo(Busca):
     """
+    Busca em árvore (não guarda os visitados)
+    
     função BUSCA-DE-APROFUNDAMENTO-ITERATIVO(problema) retorna uma solução ou falha
         para profundidade = 0 até ∞ faça
         resultado ← BUSCA-EM-PROFUNDIDADE-LIMITADA(problema, profundidade)

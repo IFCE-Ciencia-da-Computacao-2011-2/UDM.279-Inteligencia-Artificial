@@ -59,22 +59,3 @@ class ProblemaAspirador(Problema):
         limpar = Acao(estado, estado_limpar, 1)
         
         return fazer_nada, ir_para_outro_lado, limpar
-
-from busca import BuscaEmLargura, BuscaDeCustoUniforme, BuscaEmProfundidade, BuscaEmProfundidadeLimitada, BuscaDeAprofundamentoIterativo
-
-sujo = EstadoAspirador(esquerdo_limpo=False, direito_limpo=False, localizado_no_esquerdo=True)
-
-problema = ProblemaAspirador(sujo)
-
-metodos = [
-    BuscaEmLargura(),
-    #BuscaDeCustoUniforme(),
-    BuscaEmProfundidade(),
-    BuscaEmProfundidadeLimitada(10),
-    BuscaDeAprofundamentoIterativo()
-]
-
-for metodo in metodos:
-    print(metodo)
-    metodo.buscar(problema).beautify()
-    print()

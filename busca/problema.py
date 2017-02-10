@@ -64,6 +64,7 @@ class Acao(object):
         self.destino = destino
         self.custo = custo # Custo de caminho
 
+        
 class No(object):
     """
     Um nó é uma anotação da estrutura de dados usada para representar a árvore de busca
