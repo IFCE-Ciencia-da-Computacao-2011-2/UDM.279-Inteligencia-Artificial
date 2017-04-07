@@ -23,6 +23,29 @@ class ProblemaRomenia(Problema):
         'Vaslui': {'Urziceni':142, 'Iasi':92},
         'Zerind': {'Oradea':71, 'Arad':75}
     }
+    
+    heuristica_bucharest = {
+        'Arad': 366,
+        'Bucharest': 0,
+        'Craiova': 160,
+        'Dobreta': 242,
+        'Eforie': 161,
+        'Fagaras': 178,
+        'Giurgiu': 77,
+        'Hirsova': 151,
+        'Iasi': 226,
+        'Lugoj': 244,
+        'Mehadia': 241,
+        'Neamt': 234,
+        'Oradea': 380,
+        'Pitesti': 98,
+        'Rimnicu': 193,
+        'Sibiu': 253,
+        'Timisoara': 329,
+        'Urziceni': 80,
+        'Vaslui': 199,
+        'Zerind': 374
+    }
 
     def acoes(self, estado):
         return self.gerarAcoes(estado)
@@ -30,3 +53,8 @@ class ProblemaRomenia(Problema):
     def gerarAcoes(self, estado):
         return [Acao(estado, k, v) for k, v in ProblemaRomenia.mapa[estado].items()]
     
+    def heuristica(self, estado):
+        """
+        Heurística exclusivamente para Romênia
+        """
+        return self.heuristica_bucharest[estado]

@@ -211,4 +211,3 @@ class BuscaDeAprofundamentoIterativo(Busca):
 class BuscaBidirecional(Busca):
     """Não vou implementar"""
     pass
-
