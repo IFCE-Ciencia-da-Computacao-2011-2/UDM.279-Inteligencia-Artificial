@@ -45,7 +45,7 @@ puzzle = SlidingPuzzle(4, 4)
 #puzzle.map = [[5, 1, 0], [2, 3, 8], [6, 4, 7]]
 #puzzle.position = (2, 0)
 
-movimentos = shuffle(puzzle, 25)
+movimentos = shuffle(puzzle, 30)
 
 print(puzzle)
 #print(movimentos)
