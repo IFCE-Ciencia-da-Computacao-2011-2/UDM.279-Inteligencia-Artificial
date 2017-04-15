@@ -1,7 +1,10 @@
 from enum import Enum
+import numpy as np
+
 
 class InvalidMovement(Exception):
     pass
+
 
 class SlidingMovement(Enum):
     """
@@ -20,13 +23,18 @@ class SlidingMovement(Enum):
             SlidingMovement.FROM_RIGHT: SlidingMovement.FROM_LEFT
         }[self]
 
+
 class SlidingPuzzle(object):
     
-    def __init__(self, width=3, height=3):
+    def __init__(self, width=3, height=3, map=None):
         self.width = width
         self.height = height
-        
-        self.map = [[i*width + j for j in range(width)] for i in range(height)]
+
+        if map is None:
+            self.map = np.asarray(range(height * width), dtype='uint8').reshape((height, width))
+        else:
+            self.map = map
+
         self.position = (0, 0)
     
     def move(self, movement):
@@ -70,9 +78,10 @@ class SlidingPuzzle(object):
         return actions
 
     def copy(self):
-        puzzle = SlidingPuzzle(self.width, self.height)
+        puzzle_map = np.empty_like(self.map)
+        np.copyto(puzzle_map, self.map)
+        puzzle = SlidingPuzzle(self.width, self.height, map=puzzle_map)
         puzzle.position = (self.position[0], self.position[1])
-        puzzle.map = [row[:] for row in self.map]
         
         return puzzle
     
@@ -80,25 +89,14 @@ class SlidingPuzzle(object):
         return self.__str__
     
     def __str__(self):
-        digit_size = str(len(str(self.width * self.height)))
-        
-        text = '\n'
-        for line in self.map:
-            for element in line:
-                if element == 0:
-                    element = ' '
-                
-                text += ('{:>'+digit_size+'} ').format(element)
-            text += '\n'
-
-        return text
+        return str(self.map)
 
     @property
     def asarray(self):
-        return [element for line in self.map for element in line]
+        return self.map.flatten()
 
     def __eq__(self, other):
-        return self.asarray == other.asarray
+        return (self.asarray == other.asarray).all()
 
     def __hash__(self):
         return hash(tuple(self.asarray))

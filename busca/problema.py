@@ -54,6 +54,7 @@ class Problema(object):
         """
         return acao.custo
 
+
 class Acao(object):
     """
     A ação de ir de um estado de origem para um de destino possui um custo.

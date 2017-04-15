@@ -2,6 +2,7 @@ from problema import Problema, Acao, Estado
 
 from sliding_puzzle.sliding_puzzle import SlidingPuzzle, SlidingMovement, InvalidMovement
 
+
 class ProblemaSlidingPuzzle(Problema):
 
     def __init__(self, sliding_puzzle, heuristica):
@@ -9,6 +10,7 @@ class ProblemaSlidingPuzzle(Problema):
         objetivo = SlidingPuzzle(sliding_puzzle.width, sliding_puzzle.height)
 
         self.estados_objetivos = [objetivo]
+        #print("objetivo", self.estados_objetivos)
         self.estado_objetivo_array = objetivo.asarray
         self._heuristica = heuristica
 

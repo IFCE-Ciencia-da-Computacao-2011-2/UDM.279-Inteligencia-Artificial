@@ -11,6 +11,8 @@ from busca_astar import BuscaAStar
 from busca import LimiteError, BuscaError
 
 import random
+import time
+
 
 def shuffle(puzzle, n=50):
     realized_movements = []
@@ -30,53 +32,73 @@ def shuffle(puzzle, n=50):
     return realized_movements
 
 
-puzzle = SlidingPuzzle(4, 4)
 
-# 28 passos
-#[
-#    [5, 6, 0],
-#    [8, 7, 1],
-#    [2, 4, 3],
-#]
+def executar(puzzle, metodo, heuristica):
+    tempo_inicial = time.process_time()
 
-# 28 passos
-#[[8, 3, 7], [1, 4, 6], [0, 5, 2]
+    problema = ProblemaSlidingPuzzle(puzzle.copy(), heuristica)
+    resultado = metodo.buscar(problema)
+    #resultado.beautify()
 
-#puzzle.map = [[5, 1, 0], [2, 3, 8], [6, 4, 7]]
-#puzzle.position = (2, 0)
+    tempo_final = time.process_time()
 
-movimentos = shuffle(puzzle, 30)
+    return tempo_final - tempo_inicial, len(resultado.caminho)
 
-print(puzzle)
-#print(movimentos)
+
+
 
 metodos = [
-    #BuscaEmLargura(),
-    #BuscaDeCustoUniforme(),
-    #BuscaEmProfundidadeArvore(),
-    #BuscaEmProfunidadeGrafo(),
-    #BuscaEmProfundidadeLimitada(15),
-    #BuscaDeAprofundamentoIterativo(),
-    BuscaAStar()
+    (BuscaEmLargura(), None, 'Largura'),# Muito lenta 3x3
+    #(BuscaDeCustoUniforme(), heuristica),
+    #(BuscaEmProfundidadeArvore(), heuristica),
+    (BuscaEmProfunidadeGrafo(), None, 'Profundidade (grafo)'),
+    (BuscaEmProfundidadeLimitada(15), None, 'Profundidade limitada - 15'),# 2x2 limitada a 15 # 2x3 limitada a 20
+    (BuscaDeAprofundamentoIterativo(), None, 'Aprofundamento Interativo'), #Muito lento 2x3
+    (BuscaAStar(), HeuristicaDistanciaQuarteirao(), 'A* - Distância quarteirão'),
+    (BuscaAStar(), HeuristicaErrados(), 'A* - Nº errados')
 ]
 
-for metodo in metodos:
-    print('#' * 30)
-    print('#', metodo.__class__.__name__)
-    print('#' * 30)
-    
-    try:
-        problema = ProblemaSlidingPuzzle(puzzle.copy(), HeuristicaDistanciaQuarteirao())
-        metodo.buscar(problema).beautify()
-        
-        problema = ProblemaSlidingPuzzle(puzzle.copy(), HeuristicaErrados())
-        metodo.buscar(problema).beautify()
-    except RuntimeError as error:
-        print('\033[0;31m', 'Error:', error, '\033[0m')
-    except LimiteError as error:
-        print('\033[1;33m', 'Error:', error, '\033[0m')
-    except BuscaError as error:
-        print('\033[1;33m', 'Error:', error, '\033[0m')
 
-    print()
+TOTAL_TENTATIVAS = 10
+tamanhos = (2, 2), (2, 3)#, (3, 3)#, (3, 4)#, (4, 4), (4, 5), (5, 5)
+#tamanhos = (2, 2), (2, 3), (3, 3)#, (3, 4)#, (4, 4), (4, 5), (5, 5)
+#tamanhos = (3, 3), (3, 4), (4, 4), (4, 5), (5, 5)
 
+resultado_geral = {}
+for tamanho in tamanhos:
+
+    puzzle = SlidingPuzzle(tamanho[0], tamanho[1])
+    movimentos = shuffle(puzzle, 150)
+
+    print('Tamanho: ', tamanho)
+    print(puzzle)
+    #print(movimentos)
+
+    resultado = {}
+
+    for metodo, heuristica, titulo in metodos:
+        print(metodo.__class__.__name__)
+        resultados = []
+
+        for i in range(TOTAL_TENTATIVAS):
+            print(i)
+
+            try:
+                tempo, passos = executar(puzzle, metodo, heuristica)
+                resultados.append({
+                    'tempo': tempo,
+                    'passos': passos
+                })
+
+            except Exception as error:
+                resultados.append({'tempo': -1, 'passos': -1})
+                print(error)
+                break
+        print()
+        resultado[titulo] = resultados
+
+    resultado_geral[str(tamanho)] = resultado
+
+import json
+print(json.dumps(resultado_geral))
+#print(resultado_geral)
