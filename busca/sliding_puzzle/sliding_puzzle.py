@@ -99,4 +99,4 @@ class SlidingPuzzle(object):
         return (self.asarray == other.asarray).all()
 
     def __hash__(self):
-        return hash(tuple(self.asarray))
+        return hash(str(self.asarray))

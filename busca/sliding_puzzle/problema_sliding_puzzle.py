@@ -10,7 +10,6 @@ class ProblemaSlidingPuzzle(Problema):
         objetivo = SlidingPuzzle(sliding_puzzle.width, sliding_puzzle.height)
 
         self.estados_objetivos = [objetivo]
-        #print("objetivo", self.estados_objetivos)
         self.estado_objetivo_array = objetivo.asarray
         self._heuristica = heuristica
 

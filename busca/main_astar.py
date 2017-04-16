@@ -12,6 +12,7 @@ from busca import LimiteError, BuscaError
 
 import random
 import time
+import json
 
 
 def shuffle(puzzle, n=50):
@@ -32,7 +33,6 @@ def shuffle(puzzle, n=50):
     return realized_movements
 
 
-
 def executar(puzzle, metodo, heuristica):
     tempo_inicial = time.process_time()
 
@@ -48,21 +48,20 @@ def executar(puzzle, metodo, heuristica):
 
 
 metodos = [
-    (BuscaEmLargura(), None, 'Largura'),# Muito lenta 3x3
+    #(BuscaEmLargura(), None, 'Largura'),# Muito lenta 3x3
     #(BuscaDeCustoUniforme(), heuristica),
     #(BuscaEmProfundidadeArvore(), heuristica),
-    (BuscaEmProfunidadeGrafo(), None, 'Profundidade (grafo)'),
-    (BuscaEmProfundidadeLimitada(15), None, 'Profundidade limitada - 15'),# 2x2 limitada a 15 # 2x3 limitada a 20
-    (BuscaDeAprofundamentoIterativo(), None, 'Aprofundamento Interativo'), #Muito lento 2x3
+    #(BuscaEmProfunidadeGrafo(), None, 'Profundidade (grafo)'),
+    #(BuscaEmProfundidadeLimitada(15), None, 'Profundidade limitada - 15'),# 2x2 limitada a 15 # 2x3 limitada a 20
+    #(BuscaDeAprofundamentoIterativo(), None, 'Aprofundamento Interativo'), #Muito lento 2x3
     (BuscaAStar(), HeuristicaDistanciaQuarteirao(), 'A* - Distância quarteirão'),
     (BuscaAStar(), HeuristicaErrados(), 'A* - Nº errados')
 ]
 
 
 TOTAL_TENTATIVAS = 10
-tamanhos = (2, 2), (2, 3)#, (3, 3)#, (3, 4)#, (4, 4), (4, 5), (5, 5)
-#tamanhos = (2, 2), (2, 3), (3, 3)#, (3, 4)#, (4, 4), (4, 5), (5, 5)
-#tamanhos = (3, 3), (3, 4), (4, 4), (4, 5), (5, 5)
+#tamanhos = (2, 2), (2, 3)
+tamanhos = (3, 3), (3, 4), (4, 4)#, (4, 5), (5, 5)
 
 resultado_geral = {}
 for tamanho in tamanhos:
@@ -96,9 +95,11 @@ for tamanho in tamanhos:
                 break
         print()
         resultado[titulo] = resultados
+        print(json.dumps(resultado[titulo]))
 
     resultado_geral[str(tamanho)] = resultado
+    print(json.dumps(resultado_geral))
 
-import json
+
 print(json.dumps(resultado_geral))
 #print(resultado_geral)

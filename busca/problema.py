@@ -126,7 +126,7 @@ class Solucao(object):
         
         no = self.caminho
         for passo in self.caminho:
-            caminho += ' -> ' + str(passo[2])
+            caminho += ' -> \n' + str(passo[2])
         
         print(caminho)
 
